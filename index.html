@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Diario del Personal - MALLORCABAU</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #D3D3D3; /* Fondo gris claro */
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Sombreado */
+        }
+        .empresa {
+            font-size: 36px;
+            font-weight: bold; /* Negrita */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombreado */
+        }
+        .mallorca {
+            color: #CCAA00; /* Color ocre amarillo */
+        }
+        .bau {
+            color: white; /* Color blanco */
+        }
+        .ulders {
+            color: black; /* Color negro */
+            font-size: 24px; /* Tamaño inferior a MALLORCABAU */
+            margin-top: -10px; /* Ajuste para mejorar la estética */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Sombreado */
+        }
+        .control {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        form {
+            background-color: rgba(250, 235, 215, 0.9); /* Fondo crema claro semitransparente para el formulario */
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Sombreado */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            background-color: white; /* Color de las casillas blanco */
+        }
+        th {
+            background-color: #FAEBD7; /* Fondo crema claro para encabezados */
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF; /* Color de fondo del botón */
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="empresa">
+            <span class="mallorca">MALLORCA</span><span class="bau">BAU</span>
+        </div>
+        <div class="ulders">ULDERS</div>
+    </header>
+
+    <div class="control">Control Diario del Personal</div>
+
+    <form id="attendanceForm">
+        <label for="supervisorName">Encargado de Obra:</label><br>
+        <input type="text" id="supervisorName" name="supervisorName" required><br><br>
+
+        <label for="work">Obra:</label><br>
+        <input type="text" id="work" name="work" required><br><br>
+
+        <label for="employeeName">Personal:</label><br>
+        <input type="text" id="employeeName" name="employeeName" required><br><br>
+
+        <label for="dni">DNI:</label><br>
+        <input type="text" id="dni" name="dni" required><br><br>
+
+        <label for="companyName">Nombre Empresa o Subcontrata:</label><br>
+        <input type="text" id="companyName" name="companyName" required><br><br>
+
+        <label for="date">Fecha:</label><br>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <label for="entryTime">Hora de Entrada:</label><br>
+        <input type="time" id="entryTime" name="entryTime" required><br><br>
+
+        <label for="exitTime">Hora de Salida:</label><br>
+        <input type="time" id="exitTime" name="exitTime" required><br><br>
+
+        <button type="submit">Agregar Registro</button>
+    </form>
+
+    <h2>Registros de Asistencia</h2>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Encargado de Obra</th>
+                <th>Obra</th>
+                <th>Personal</th>
+                <th>DNI</th>
+                <th>Nombre Empresa o Subcontrata</th>
+                <th>Fecha</th>
+                <th>Hora de Entrada</th>
+                <th>Hora de Salida</th>
+                <th>Total de Horas por Día</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <button id="exportButton">Exportar a Excel</button>
+    <a id="emailLink" href="mailto:administracion@baumallorca.de?subject=Registro de Asistencia" style="display:none;">Enviar por Correo</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('attendanceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const supervisorName = document.getElementById('supervisorName').value;
+            const work = document.getElementById('work').value;
+            const employeeName = document.getElementById('employeeName').value;
+            const dni = document.getElementById('dni').value;
+            const companyName = document.getElementById('companyName').value;
+            const date = document.getElementById('date').value;
+            const entryTime = document.getElementById('entryTime').value;
+            const exitTime = document.getElementById('exitTime').value;
+
+            const totalHours = calculateTotalHours(entryTime, exitTime);
+
+            const table = document.getElementById('attendanceTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            newRow.innerHTML = `
+                <td>${supervisorName}</td>
+                <td>${work}</td>
+                <td>${employeeName}</td>
+                <td>${dni}</td>
+                <td>${companyName}</td>
+                <td>${date}</td>
+                <td>${entryTime}</td>
+                <td>${exitTime}</td>
+                <td>${totalHours}</td>
+            `;
+
+            document.getElementById('attendanceForm').reset();
+        });
+
+        function calculateTotalHours(entry, exit) {
+            const entryDate = new Date(`1970-01-01T${entry}:00`);
+            const exitDate = new Date(`1970-01-01T${exit}:00`);
+            const diff = (exitDate - entryDate) / (1000 * 60 * 60);
+            return diff >= 0 ? diff.toFixed(2) : 0;
+        }
+
+        document.getElementById('exportButton').addEventListener('click', function() {
+            const table = document.getElementById('attendanceTable');
+            const wb = XLSX.utils.table_to_book(table, {sheet: "Registros"});
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('es-ES').replace(/\//g, '-');
+            XLSX.writeFile(wb, `Registro_Asistencia_${formattedDate}.xlsx`);
+            document.getElementById('emailLink').style.display = 'inline'; // Mostrar enlace para enviar correo
+        });
+    </script>
+    
+</body>
+</html>
